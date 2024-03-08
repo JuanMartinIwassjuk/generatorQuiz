@@ -10,7 +10,7 @@ def get_openai_response_in_json_format(number_of_questions, number_of_options, d
     prompt = f"generate {number_of_questions} specific questions with a difficulty level of {difficulty_level} about the topic {topic}"
 
     messages = [
-        {'role': 'system', 'content': f'have {number_of_options} options for each question, including the correct answer, and your response in JSON format'},
+        {'role': 'system', 'content': f'have {number_of_options} options for each question, including the correct answer, and your response in JSON format like this:openkey "questions": [ openkey "question": "Sample question?", "options": ["Option A", "Option B", "Option C"], "correct_answer": "Option A" closedkey ] closedkey'},
         {'role': 'user', 'content': prompt}
     ]
 

@@ -1,4 +1,5 @@
 import main
+import json
 from config import NUMBER_OF_QUESTIONS,NUMBER_OF_OPTIONS,LEVEL_OF_DIFFICULTY,TOPIC
 class Quiz:
     def __init__(self, questions):
@@ -18,8 +19,11 @@ class Quiz:
 # Devuelve la respuesta de la ia en formato json
 quiz_data = main.get_openai_response_in_json_format(NUMBER_OF_QUESTIONS,NUMBER_OF_OPTIONS, LEVEL_OF_DIFFICULTY, TOPIC)
 
+#print(quiz_data)
+
+quiz_data_dict=json.loads(quiz_data)
 # crea el Quiz
-quiz = Quiz(quiz_data["questions"])
+quiz = Quiz(quiz_data_dict["questions"])
 
 # Display all questions and options with correct answers
 for i in range(len(quiz.questions)):
