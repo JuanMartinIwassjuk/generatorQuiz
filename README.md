@@ -1,4 +1,5 @@
-Generación del Quiz
+#Generación del Quiz
+
 Para incorporar un Quiz a tu proyecto, seguir los siguientes pasos:
 
 1. Crear el archivo de configuración
@@ -7,6 +8,8 @@ En la carpeta principal del proyecto, crea un archivo llamado "config.py".
 2. Configuración del archivo
 Abre el archivo "config.py" y personalízalo según tus preferencias para diseñar el Quiz. Asegúrate de incluir las siguientes características:
 
+
+# Key para consultarle a la api de OpenAI
 API_KEY = 'api_key'
 
 # Nombre del modelo de OpenAI
