@@ -21,7 +21,7 @@ NUMBER_OF_QUESTIONS = 4
 # Número de opciones por pregunta
 NUMBER_OF_OPTIONS = 2
 
-# Nivel de dificultad del Quiz (opciones: 'fácil', 'normal', 'difícil')
+# Nivel de dificultad del Quiz (opciones: 'very_easy','easy','easy-normal', 'normal','normal-hard', 'hard','very_hard')
 LEVEL_OF_DIFFICULTY = 'normal'
 
 # Tema del Quiz
