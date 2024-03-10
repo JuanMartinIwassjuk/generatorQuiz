@@ -4,7 +4,7 @@ import posicion
 
 
 
-def generar_json_data(num_preguntas,quiz_data_dict):
+def generar_json_data(num_preguntas,quiz_data_dict,template_id,music):
     json_data = {}
     preguntas = quiz_data_dict.get("questions", [])
 
@@ -29,10 +29,9 @@ def generar_json_data(num_preguntas,quiz_data_dict):
             json_data[posicion_key] = posicion
 
     # Agregar claves y valores fijos
-    json_data["template_id"] = "ca083e1e-8095-4a18-b4cd-2004eb41ddd3"
+    json_data["template_id"] = "{template_id}"
     json_data["modifications"] = {
-        "Music": "https://creatomate.com/files/assets/b5dc815e-dcc9-4c62-9405-f94913936bf5",
-        "4e31b834-08c3-4a7e-88d0-bbb69d38a00a": "https://creatomate.com/files/assets/4a6f6b28-bb42-4987-8eca-7ee36b347ee7",
+        "Music": "{music}",
         "859e205a-8a69-41ac-b2ff-bacce9de1c2f": "https://creatomate.com/files/assets/4a6f6b28-bb42-4987-8eca-7ee36b347ee7",
         "Text-2": "Use any video automation tool to replace these text and background assets with your own! 😊",
         "Background-3": "https://creatomate.com/files/assets/4f6963a5-7286-450b-bc64-f87a3a1d8964",

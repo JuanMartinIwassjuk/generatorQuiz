@@ -7,6 +7,7 @@ import posicion
 import generadorJson
 import main
 from config import NUMBER_OF_QUESTIONS,NUMBER_OF_OPTIONS,LEVEL_OF_DIFFICULTY,TOPIC
+from template_config import TEMPLATE_ID,MUSIC
 client = Client()
 response = client.chat.completions.create(
     model="gpt-3.5-turbo",
@@ -27,9 +28,6 @@ data = main.get_openai_response_in_json_format(NUMBER_OF_QUESTIONS,NUMBER_OF_OPT
 
 quiz_data_dict=json.loads(data)
 
-# Tomar la pregunta actual del conjunto de preguntas
-question_data = quiz_data_dict["questions"][0]
-
     # Hacer la solicitud POST
 response = requests.post(
         "https://api.creatomate.com/v1/renders",
@@ -37,7 +35,7 @@ response = requests.post(
             'Authorization': 'Bearer 9c435d749d23460ea0b27611a122b4f9fc671b86d2c2012e9a71166f5e60d226794199805fdd225cc642df09154f5153',
             'Content-Type': 'application/json',
         },
-        json=generadorJson.generar_json_data(NUMBER_OF_QUESTIONS,quiz_data_dict)
+        json=generadorJson.generar_json_data(NUMBER_OF_QUESTIONS,quiz_data_dict,TEMPLATE_ID,MUSIC)
 )
 
 # time.sleep(60)
