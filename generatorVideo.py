@@ -1,55 +1,107 @@
-import requests
 import json
-import os
-from g4f.client import Client
-import time
-import posicion
-import generadorJson
-import main
-from config import NUMBER_OF_QUESTIONS,NUMBER_OF_OPTIONS,LEVEL_OF_DIFFICULTY,TOPIC
-from template_config import TEMPLATE_ID,MUSIC
-client = Client()
-response = client.chat.completions.create(
-    model="gpt-3.5-turbo",
-    messages=[{"role": "user", "content": """Generate a trivia question about 
-    geography and 3 possible answers. The response must only contain this 
-    information in the next format: 
-      { \"question\": \"content\", 
-      \"first_answer\": \"content\", 
-      \"second_answer\": \"content\", 
-      \"third_answer\": \"content\", 
-      \"correct_answer\": 0, 1, 2 }"""}
-    ]
-)
+import requests
+import position
+import generatorQuiz
+from creatomate import Animation, Image, Element, Composition, Source, Video, Audio
+from config import NUMBER_OF_QUESTIONS,NUMBER_OF_OPTIONS, LEVEL_OF_DIFFICULTY, TOPIC,BACKGROUND_IMG
 
-print(response.choices[0].message.content)
 
-data = main.get_openai_response_in_json_format(NUMBER_OF_QUESTIONS,NUMBER_OF_OPTIONS, LEVEL_OF_DIFFICULTY, TOPIC)
+background_list_dict = json.loads(BACKGROUND_IMG)
+
+data = '{"questions": [ { "question": "Which event marked the end of World War II in Europe?", "options": ["The signing of the Treaty of Versailles", "The dropping of the atomic bomb on Hiroshima", "The unconditional surrender of Nazi Germany"], "correct_answer": "The unconditional surrender of Nazi Germany" }, { "question": "Who was the first President of the United States?", "options": ["Thomas Jefferson", "George Washington", "Abraham Lincoln"], "correct_answer": "George Washington" } ]}'
+
+#data = generatorQuiz.get_openai_response_in_json_format(NUMBER_OF_QUESTIONS,NUMBER_OF_OPTIONS, LEVEL_OF_DIFFICULTY, TOPIC)
 
 quiz_data_dict=json.loads(data)
 
-    # Hacer la solicitud POST
-response = requests.post(
-        "https://api.creatomate.com/v1/renders",
-        headers={
-            'Authorization': 'Bearer 9c435d749d23460ea0b27611a122b4f9fc671b86d2c2012e9a71166f5e60d226794199805fdd225cc642df09154f5153',
-            'Content-Type': 'application/json',
-        },
-        json=generadorJson.generar_json_data(NUMBER_OF_QUESTIONS,quiz_data_dict,TEMPLATE_ID,MUSIC)
+text_start_anim = Animation(
+    time="0 s",
+    duration="1.5 s",
+    easing="quadratic-out",
+    type="text-slide",
+    scope="split-clip",
+    split="line",
+    distance="100%",
+    direction="up",
 )
 
-# time.sleep(60)
+text_end_anim = Animation(
+    time="end",
+    duration="1 s",
+    easing="quadratic-out",
+    type="text-slide",
+    direction="left",
+    split="line",
+    scope="element",
+    distance="200%",
+    reversed=True
+)
 
-# def downloadfile(name,url):
-#     name=name+".mp4"
-#     r=requests.get('https://cdn.creatomate.com/renders/fbec7f72-2573-4685-bc8f-21d8ddadbc0e.mp4')
-#     print ("****Connected****")
-#     f=open(name,'wb');
-#     print("Donloading.....")
-#     for chunk in r.iter_content(chunk_size=255): 
-#         if chunk: # filter out keep-alive new chunks
-#             f.write(chunk)
-#     print("Done")
-#     f.close()
+comp_start_anim = Animation(
+    time="start",
+    duration="1 s",
+    transition=True,
+    type="wipe",
+    fade=False,
+    x_anchor="0%",
+    end_angle="270°",
+    start_angle="270°"
+)
 
-# downloadfile()
+stroke_color = [{ "time": "0 s", "value": "#000000" }, { "time": "5.2 s", "value": "#000000" }, { "time": "5.5 s", "value": "#00ff00" }]
+
+source = Source('mp4', 1080, 1920, "20 s")
+background_music = Audio("Music", 18, "0 s", None, True, "b5dc815e-dcc9-4c62-9405-f94913936bf5", "51%", "2 s")
+source.elements.append(background_music)
+video = Video(source)
+
+for index_pregunta, question in enumerate(quiz_data_dict["questions"]):
+    composition = Composition("Question" + str(index_pregunta), 1, "8 s")
+
+    question_text = Element("text", track=2, text=question["question"], y="21.80%", fill_color="#000000", background_color="#ffffff")
+    question_text.animations.append(text_start_anim)
+    question_text.animations.append(text_end_anim)
+    composition.elements.append(question_text)
+
+    animation = Animation(easing='linear', type='scale', scope='element', start_scale='120%', fade=False)
+    image = Image(background_list_dict[index_pregunta], 1, 10, True, [])
+    image.animations.append(animation)
+    composition.elements.append(image)
+
+    counter = Image("06311a89-c770-48e1-8a33-b5c1c417c787", 9, 5, True, [], y="81.96%", width="26.062%", height="15.1904%")
+    composition.elements.append(counter)
+
+    countdown = Audio("countdown", 10, "0 s", "4.8 s", True, "3b591fe7-e995-4e18-9353-f38c122cc3fb", "100%", "0 s")
+    composition.elements.append(countdown)
+    correct = Audio("correct", 10, "4.90 s", "1.85 s", True, "530d3905-bd5b-4534-9532-f6657ed03296", "100%", "0 s")
+    composition.elements.append(countdown)
+    composition.elements.append(correct)
+
+    if index_pregunta > 0:
+        composition.animations.append(comp_start_anim)
+
+    for index_opcion, option in enumerate(question["options"]):
+        position_y = 52 + (10 * index_opcion)
+        option_text = Element("text", track=index_opcion + 3, text=option, y=str(position_y) + "%", fill_color="#ffffff")
+        if index_opcion == position.encontrar_indice(quiz_data_dict["questions"][index_pregunta]["options"],quiz_data_dict["questions"][index_pregunta]["correct_answer"]):
+            option_text.stroke_color = stroke_color
+        else:
+            option_text.stroke_color = "#000000"
+        
+        composition.elements.append(option_text)
+
+    for i in range(5):
+        countdown_text_number = Element("text", track=12, text=str(5 - i), x="54.90%", y="84.96%", z_index=1, time=i, duration="1 s", fill_color="#111111", font_size="15 vmin")
+        composition.elements.append(countdown_text_number)
+
+    source.elements.append(composition)
+
+output = json.loads(video.toJSON())
+response = requests.post(
+ 'https://api.creatomate.com/v1/renders',
+ headers={
+  'Authorization': 'Bearer c663356c21cf47a999df4684c11d6bc8af5f486da8ac9ab718afbc26ada2f5cb37981ab32767cd0565936e91e3e08b10',
+  'Content-Type': 'application/json',
+ },
+ json=output
+)
