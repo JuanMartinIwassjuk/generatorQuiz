@@ -45,3 +45,5 @@ AUTORIZACION='c623356c25cf47a999df4684c11d6bc8af5g486da8ac9ab718atkc26ada2f5cb37
 El archivo para que funcione correctamente deberia quedar algo así:
 ![Los valores proporcionados para "API_KEY" y "autorizacion" son meramente ejemplos ilustrativos y no tienen la funcionalidad real de acceso.](https://github.com/JuanMartinIwassjuk/generatorQuiz/blob/main/ejemploConfig.png?raw=true)
 
+Aclaracion: Los valores proporcionados para "API_KEY" y "AUTORIZACION" son meramente ejemplos ilustrativos y no tienen la funcionalidad real de acceso.
+
