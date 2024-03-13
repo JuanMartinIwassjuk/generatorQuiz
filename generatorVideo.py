@@ -3,7 +3,7 @@ import requests
 import functions_videos
 import generatorQuiz
 from creatomate import Animation, Image, Element, Composition, Source, Video, Audio
-from config import NUMBER_OF_QUESTIONS,NUMBER_OF_OPTIONS, LEVEL_OF_DIFFICULTY, TOPIC,BACKGROUND_IMG
+from config import NUMBER_OF_QUESTIONS,NUMBER_OF_OPTIONS, LEVEL_OF_DIFFICULTY, TOPIC,BACKGROUND_IMG,AUTORIZACION
 
 
 background_list_dict = json.loads(BACKGROUND_IMG)
@@ -103,7 +103,7 @@ output = json.loads(video.toJSON())
 response = requests.post(
  'https://api.creatomate.com/v1/renders',
  headers={
-  'Authorization': 'Bearer c663356c21cf47a999df4684c11d6bc8af5f486da8ac9ab718afbc26ada2f5cb37981ab32767cd0565936e91e3e08b10',
+  'Authorization': 'Bearer '+{AUTORIZACION},
   'Content-Type': 'application/json',
  },
  json=output
