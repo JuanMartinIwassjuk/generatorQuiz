@@ -1,6 +1,6 @@
 import json
 import requests
-import position
+import functions_videos
 import generatorQuiz
 from creatomate import Animation, Image, Element, Composition, Source, Video, Audio
 from config import NUMBER_OF_QUESTIONS,NUMBER_OF_OPTIONS, LEVEL_OF_DIFFICULTY, TOPIC,BACKGROUND_IMG
@@ -8,9 +8,9 @@ from config import NUMBER_OF_QUESTIONS,NUMBER_OF_OPTIONS, LEVEL_OF_DIFFICULTY, T
 
 background_list_dict = json.loads(BACKGROUND_IMG)
 
-data = '{"questions": [ { "question": "Which event marked the end of World War II in Europe?", "options": ["The signing of the Treaty of Versailles", "The dropping of the atomic bomb on Hiroshima", "The unconditional surrender of Nazi Germany"], "correct_answer": "The unconditional surrender of Nazi Germany" }, { "question": "Who was the first President of the United States?", "options": ["Thomas Jefferson", "George Washington", "Abraham Lincoln"], "correct_answer": "George Washington" } ]}'
+#data = '{ "questions": [ { "question": "Who is known as The King in the NBA?", "options": [ "Kevin Durant", "LeBron James", "Kobe Bryant", "Stephen Curry" ], "correct_answer": "LeBron James" }, { "question": "Which team has won the most NBA championships?", "options": [ "Los Angeles Lakers", "Boston Celtics", "Chicago Bulls", "Golden State Warriors" ], "correct_answer": "Boston Celtics" }, { "question": "Which player holds the record for the most points scored in a single NBA game?", "options": [ "Wilt Chamberlain", "Michael Jordan", "Kobe Bryant", "Kareem Abdul-Jabbar" ], "correct_answer": "Wilt Chamberlain" }, { "question": "Who is the NBA s all-time leader in assists?", "options": [ "Magic Johnson", "John Stockton", "Steve Nash", "Chris Paul" ], "correct_answer": "John Stockton" } ] }'
 
-#data = generatorQuiz.get_openai_response_in_json_format(NUMBER_OF_QUESTIONS,NUMBER_OF_OPTIONS, LEVEL_OF_DIFFICULTY, TOPIC)
+data = generatorQuiz.get_openai_response_in_json_format(NUMBER_OF_QUESTIONS,NUMBER_OF_OPTIONS, LEVEL_OF_DIFFICULTY, TOPIC)
 
 quiz_data_dict=json.loads(data)
 
@@ -50,7 +50,7 @@ comp_start_anim = Animation(
 
 stroke_color = [{ "time": "0 s", "value": "#000000" }, { "time": "5.2 s", "value": "#000000" }, { "time": "5.5 s", "value": "#00ff00" }]
 
-source = Source('mp4', 1080, 1920, "20 s")
+source = Source('mp4', 1080, 1920, functions_videos.generar_tiempo_video(NUMBER_OF_QUESTIONS))
 background_music = Audio("Music", 18, "0 s", None, True, "b5dc815e-dcc9-4c62-9405-f94913936bf5", "51%", "2 s")
 source.elements.append(background_music)
 video = Video(source)
@@ -83,7 +83,7 @@ for index_pregunta, question in enumerate(quiz_data_dict["questions"]):
     for index_opcion, option in enumerate(question["options"]):
         position_y = 52 + (10 * index_opcion)
         option_text = Element("text", track=index_opcion + 3, text=option, y=str(position_y) + "%", fill_color="#ffffff")
-        if index_opcion == position.encontrar_indice(quiz_data_dict["questions"][index_pregunta]["options"],quiz_data_dict["questions"][index_pregunta]["correct_answer"]):
+        if index_opcion == functions_videos.encontrar_indice(quiz_data_dict["questions"][index_pregunta]["options"],quiz_data_dict["questions"][index_pregunta]["correct_answer"]):
             option_text.stroke_color = stroke_color
         else:
             option_text.stroke_color = "#000000"
@@ -96,7 +96,10 @@ for index_pregunta, question in enumerate(quiz_data_dict["questions"]):
 
     source.elements.append(composition)
 
+
+
 output = json.loads(video.toJSON())
+
 response = requests.post(
  'https://api.creatomate.com/v1/renders',
  headers={
@@ -105,3 +108,4 @@ response = requests.post(
  },
  json=output
 )
+

@@ -2,6 +2,15 @@ import json
 
 import json
 
+def generarArchivoDeljson(json):
+    with open("resultado_json","w") as arch:
+     arch.write(json.toJSON())
+
+
+def generar_tiempo_video(cant_preguntas):
+    resultado = str(cant_preguntas * 8) + ' s'
+    return resultado
+
 def obtener_diccionario_por_indice(indice):
     diccionarios = [
         {"x": 84, "y": 42},
