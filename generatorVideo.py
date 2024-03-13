@@ -103,7 +103,7 @@ output = json.loads(video.toJSON())
 response = requests.post(
  'https://api.creatomate.com/v1/renders',
  headers={
-  'Authorization': 'Bearer '+{AUTORIZACION},
+  'Authorization': 'Bearer '+str({AUTORIZACION}),
   'Content-Type': 'application/json',
  },
  json=output
