@@ -8,6 +8,8 @@ pip install requests
 
 pip install openai
 
+pip install watchdog
+
 2. debes tener una cuenta de "creatomate.com" y obtener el código de autorización para enviar el request: debe ser algo así:
 c623356c25cf47a999df4684c11d6bc8af5g486da8ac9ab718atkc26ada2f5cb37981ab32767cd0561936e91e3e08b01
 
