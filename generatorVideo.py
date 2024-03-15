@@ -22,11 +22,15 @@ audio.download_questions_audios_local(quiz_data_dict["questions"])
 
 ruta_audios = Path(os.getcwd()+'/audio')
 
+audioDrive=[]
 
 while len(list(ruta_audios.glob("*")))<NUMBER_OF_QUESTIONS:
     time.sleep(1)
 
 
+for index_pregunta, question in enumerate(quiz_data_dict["questions"]):
+    urlDrive = audio.upload_file_to_google_drive(os.getcwd()+'/audio'+str(index_pregunta)+'.mp3', '/audio'+str(index_pregunta)+'.mp3')
+    audioDrive.append(urlDrive)
 
 
 
@@ -78,8 +82,6 @@ video = Video(source)
 #    "https://drive.google.com/uc?export=download&id=1Vbg75JkipNkcGY0aeVMavJFfiITvmHyM"
 #]
 
-audio.descargarAudio(quiz_data_dict("questions"))
-
 for index_pregunta, question in enumerate(quiz_data_dict["questions"]):
     composition = Composition("Question" + str(index_pregunta), 1, "8 s")
 
@@ -125,7 +127,21 @@ for index_pregunta, question in enumerate(quiz_data_dict["questions"]):
     source.elements.append(composition)
 
 
-audio.eliminar_archivos_en_ruta(os.getcwd()+'/audio')
+
 output = json.loads(video.toJSON())
+
+response = requests.post(
+ 'https://api.creatomate.com/v1/renders',
+ headers={
+  'Authorization': 'Bearer '+str({AUTORIZACION}),
+  'Content-Type': 'application/json',
+ },
+ json=output
+)
+
+audio.eliminar_archivos_en_ruta(os.getcwd()+'/audio')
+for index_pregunta, question in enumerate(quiz_data_dict["questions"]):
+    audio.eliminar_archivo_de_drive(audioDrive[index_pregunta])
+
 
 print("todo ok")

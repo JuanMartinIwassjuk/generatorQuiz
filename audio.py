@@ -98,3 +98,20 @@ def eliminar_archivos_en_ruta(ruta):
             print(f"La ruta especificada '{ruta}' no es un directorio válido.")
     except Exception as e:
         print(f"Error al intentar eliminar archivos en la ruta '{ruta}': {e}")
+
+
+def eliminar_archivo_de_drive(file_url):
+    try:
+        # Extraer el ID del archivo de la URL
+        file_id = file_url.split("/")[5]
+        
+        # Autenticar
+        creds = authenticate()
+        drive_service = build('drive', 'v3', credentials=creds)
+        
+        # Eliminar el archivo
+        drive_service.files().delete(fileId=file_id).execute()
+        
+        print("Archivo eliminado de Google Drive.")
+    except Exception as e:
+        print(f"Error al intentar eliminar el archivo de Google Drive: {e}")
