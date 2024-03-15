@@ -8,9 +8,9 @@ from config import NUMBER_OF_QUESTIONS,NUMBER_OF_OPTIONS, LEVEL_OF_DIFFICULTY, T
 
 background_list_dict = json.loads(BACKGROUND_IMG)
 
-#data = '{ "questions": [ { "question": "Who is known as The King in the NBA?", "options": [ "Kevin Durant", "LeBron James", "Kobe Bryant", "Stephen Curry" ], "correct_answer": "LeBron James" }, { "question": "Which team has won the most NBA championships?", "options": [ "Los Angeles Lakers", "Boston Celtics", "Chicago Bulls", "Golden State Warriors" ], "correct_answer": "Boston Celtics" }, { "question": "Which player holds the record for the most points scored in a single NBA game?", "options": [ "Wilt Chamberlain", "Michael Jordan", "Kobe Bryant", "Kareem Abdul-Jabbar" ], "correct_answer": "Wilt Chamberlain" }, { "question": "Who is the NBA s all-time leader in assists?", "options": [ "Magic Johnson", "John Stockton", "Steve Nash", "Chris Paul" ], "correct_answer": "John Stockton" } ] }'
+data = '{ "questions": [ { "question": "Who is known as The King in the NBA?", "options": [ "LeBron James", "Kobe Bryant", "Stephen Curry" ], "correct_answer": "LeBron James" }, { "question": "Which team has won the most NBA championships?", "options": [ "Boston Celtics", "Los Angeles Lakers", "Chicago Bulls" ], "correct_answer": "Boston Celtics" }, { "question": "Which player holds the record for the most points scored in a single NBA game?", "options": [ "Wilt Chamberlain", "Michael Jordan", "Kobe Bryant" ], "correct_answer": "Wilt Chamberlain" }, { "question": "Who is the NBAs all-time leader in assists?", "options": [ "John Stockton", "Magic Johnson", "Steve Nash" ], "correct_answer": "John Stockton" } ] }'
 
-data = generatorQuiz.get_openai_response_in_json_format(NUMBER_OF_QUESTIONS,NUMBER_OF_OPTIONS, LEVEL_OF_DIFFICULTY, TOPIC)
+#data = generatorQuiz.get_openai_response_in_json_format(NUMBER_OF_QUESTIONS,NUMBER_OF_OPTIONS, LEVEL_OF_DIFFICULTY, TOPIC)
 
 quiz_data_dict=json.loads(data)
 
@@ -55,7 +55,15 @@ background_music = Audio("Music", 18, "0 s", None, True, "b5dc815e-dcc9-4c62-940
 source.elements.append(background_music)
 video = Video(source)
 
+audio = [
+    "https://drive.google.com/uc?export=download&id=1zS_b48WFMOosvi9FPjul-RKYwo-IEfC3",
+    "https://drive.google.com/uc?export=download&id=1Vbg75JkipNkcGY0aeVMavJFfiITvmHyM",
+    "https://drive.google.com/uc?export=download&id=1Vbg75JkipNkcGY0aeVMavJFfiITvmHyM",
+    "https://drive.google.com/uc?export=download&id=1Vbg75JkipNkcGY0aeVMavJFfiITvmHyM"
+]
+
 for index_pregunta, question in enumerate(quiz_data_dict["questions"]):
+    print("Question" + str(index_pregunta))
     composition = Composition("Question" + str(index_pregunta), 1, "8 s")
 
     question_text = Element("text", track=2, text=question["question"], y="21.80%", fill_color="#000000", background_color="#ffffff")
@@ -63,10 +71,14 @@ for index_pregunta, question in enumerate(quiz_data_dict["questions"]):
     question_text.animations.append(text_end_anim)
     composition.elements.append(question_text)
 
+    print("Audio" + str(index_pregunta))
+    question_to_speech = Audio("Audio" + str(index_pregunta), 10, "0 s", "2 s", True, audio[index_pregunta], "100%", "0 s")
+    composition.elements.append(question_to_speech)
+
     animation = Animation(easing='linear', type='scale', scope='element', start_scale='120%', fade=False)
-    image = Image(background_list_dict[index_pregunta], 1, 10, True, [])
-    image.animations.append(animation)
-    composition.elements.append(image)
+    #image = Image(background_list_dict[index_pregunta], 1, 10, True, [])
+    #image.animations.append(animation)
+    #composition.elements.append(image)
 
     counter = Image("06311a89-c770-48e1-8a33-b5c1c417c787", 9, 5, True, [], y="81.96%", width="26.062%", height="15.1904%")
     composition.elements.append(counter)
@@ -100,12 +112,4 @@ for index_pregunta, question in enumerate(quiz_data_dict["questions"]):
 
 output = json.loads(video.toJSON())
 
-response = requests.post(
- 'https://api.creatomate.com/v1/renders',
- headers={
-  'Authorization': 'Bearer '+str({AUTORIZACION}),
-  'Content-Type': 'application/json',
- },
- json=output
-)
-
+print("todo ok")

@@ -15,10 +15,10 @@ files_created = 0
 # Función para ejecutar el script cuando se creen suficientes archivos
 def run_script():
     global files_created
-    if files_created >= NUMBER_OF_QUESTIONS:
+    if files_created >= 2:
         print(f"Se han creado {NUMBER_OF_QUESTIONS} audios de voz. Ejecutando el script...")
         time.sleep(8)
-        os.system(script_to_run)
+        #os.system(script_to_run)
         print("ejecutado correctamente, 'ctrl+c' para finalizar")
         files_created = 0
         observer.stop()
