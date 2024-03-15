@@ -1,6 +1,10 @@
 import json
 import requests
+import audio
+import time
 import functions_videos
+import os
+from pathlib import Path
 import generatorQuiz
 from creatomate import Animation, Image, Element, Composition, Source, Video, Audio
 from config import NUMBER_OF_QUESTIONS,NUMBER_OF_OPTIONS, LEVEL_OF_DIFFICULTY, TOPIC,BACKGROUND_IMG,AUTORIZACION
@@ -13,6 +17,18 @@ data = '{ "questions": [ { "question": "Who is known as The King in the NBA?", "
 #data = generatorQuiz.get_openai_response_in_json_format(NUMBER_OF_QUESTIONS,NUMBER_OF_OPTIONS, LEVEL_OF_DIFFICULTY, TOPIC)
 
 quiz_data_dict=json.loads(data)
+
+audio.download_questions_audios_local(quiz_data_dict["questions"])
+
+ruta_audios = Path(os.getcwd()+'/audio')
+
+
+while len(list(ruta_audios.glob("*")))<NUMBER_OF_QUESTIONS:
+    time.sleep(1)
+
+
+
+
 
 text_start_anim = Animation(
     time="0 s",
@@ -55,15 +71,16 @@ background_music = Audio("Music", 18, "0 s", None, True, "b5dc815e-dcc9-4c62-940
 source.elements.append(background_music)
 video = Video(source)
 
-audio = [
-    "https://drive.google.com/uc?export=download&id=1zS_b48WFMOosvi9FPjul-RKYwo-IEfC3",
-    "https://drive.google.com/uc?export=download&id=1Vbg75JkipNkcGY0aeVMavJFfiITvmHyM",
-    "https://drive.google.com/uc?export=download&id=1Vbg75JkipNkcGY0aeVMavJFfiITvmHyM",
-    "https://drive.google.com/uc?export=download&id=1Vbg75JkipNkcGY0aeVMavJFfiITvmHyM"
-]
+#audio = [
+#    "https://drive.google.com/uc?export=download&id=1zS_b48WFMOosvi9FPjul-RKYwo-IEfC3",
+#    "https://drive.google.com/uc?export=download&id=1Vbg75JkipNkcGY0aeVMavJFfiITvmHyM",
+#    "https://drive.google.com/uc?export=download&id=1Vbg75JkipNkcGY0aeVMavJFfiITvmHyM",
+#    "https://drive.google.com/uc?export=download&id=1Vbg75JkipNkcGY0aeVMavJFfiITvmHyM"
+#]
+
+audio.descargarAudio(quiz_data_dict("questions"))
 
 for index_pregunta, question in enumerate(quiz_data_dict["questions"]):
-    print("Question" + str(index_pregunta))
     composition = Composition("Question" + str(index_pregunta), 1, "8 s")
 
     question_text = Element("text", track=2, text=question["question"], y="21.80%", fill_color="#000000", background_color="#ffffff")
@@ -71,7 +88,6 @@ for index_pregunta, question in enumerate(quiz_data_dict["questions"]):
     question_text.animations.append(text_end_anim)
     composition.elements.append(question_text)
 
-    print("Audio" + str(index_pregunta))
     question_to_speech = Audio("Audio" + str(index_pregunta), 10, "0 s", "2 s", True, audio[index_pregunta], "100%", "0 s")
     composition.elements.append(question_to_speech)
 
@@ -109,7 +125,7 @@ for index_pregunta, question in enumerate(quiz_data_dict["questions"]):
     source.elements.append(composition)
 
 
-
+audio.eliminar_archivos_en_ruta(os.getcwd()+'/audio')
 output = json.loads(video.toJSON())
 
 print("todo ok")

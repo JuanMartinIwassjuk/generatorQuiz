@@ -1,5 +1,6 @@
 import openai
 import os
+import time
 from pathlib import Path
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
@@ -13,16 +14,19 @@ import os
 
 
 
-def descargarAudio(questions):
+def download_questions_audios_local(questions):
     for index_pregunta, question in enumerate(questions):
         speech_file_path = Path(__file__).parent / "audio" / (str(index_pregunta) + ".mp3")
         response = openai.audio.speech.create(
         model="tts-1",
         voice="alloy",
         input=question["question"]
+
         )
 
         response.stream_to_file(speech_file_path)
+
+
 
 def authenticate():
     creds = None
@@ -63,7 +67,7 @@ def upload_file_to_google_drive(file_path, file_name):
 
 def obtener_Url_Del_Archivo_De_Drive(Num_audio):
     file_path = os.getcwd()+'/audio'+str(Num_audio)+'.mp3'
-    file_name = 'audio.txt'
+    file_name = '/audio'+str(Num_audio)+'.mp3'
     
     file_url = upload_file_to_google_drive(file_path, file_name)
     
@@ -72,3 +76,25 @@ def obtener_Url_Del_Archivo_De_Drive(Num_audio):
         return file_url
     else:
         print("Error al subir archivo a Google Drive.")
+
+
+def eliminar_archivos_en_ruta(ruta):
+    """
+    Elimina todos los archivos en la ruta especificada.
+    
+    :param ruta: La ruta donde se encuentran los archivos a eliminar.
+    """
+    try:
+        # Verificar si la ruta existe y es un directorio
+        if os.path.isdir(ruta):
+            # Iterar sobre los archivos en la ruta y eliminarlos
+            for archivo in os.listdir(ruta):
+                ruta_archivo = os.path.join(ruta, archivo)
+                if os.path.isfile(ruta_archivo):
+                    os.remove(ruta_archivo)
+                    print(f"Archivo eliminado: {ruta_archivo}")
+            print("Todos los archivos han sido eliminados.")
+        else:
+            print(f"La ruta especificada '{ruta}' no es un directorio válido.")
+    except Exception as e:
+        print(f"Error al intentar eliminar archivos en la ruta '{ruta}': {e}")
