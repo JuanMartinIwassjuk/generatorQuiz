@@ -16,6 +16,13 @@ data = '{ "questions": [ { "question": "Who is known as The King in the NBA?", "
 
 #data = generatorQuiz.get_openai_response_in_json_format(NUMBER_OF_QUESTIONS,NUMBER_OF_OPTIONS, LEVEL_OF_DIFFICULTY, TOPIC)
 
+#audio = [
+#    "https://drive.google.com/uc?export=download&id=1zS_b48WFMOosvi9FPjul-RKYwo-IEfC3",
+#    "https://drive.google.com/uc?export=download&id=1Vbg75JkipNkcGY0aeVMavJFfiITvmHyM",
+#    "https://drive.google.com/uc?export=download&id=1Vbg75JkipNkcGY0aeVMavJFfiITvmHyM",
+#    "https://drive.google.com/uc?export=download&id=1Vbg75JkipNkcGY0aeVMavJFfiITvmHyM"
+#]
+
 quiz_data_dict=json.loads(data)
 
 audio.download_questions_audios_local(quiz_data_dict["questions"])
@@ -24,14 +31,20 @@ ruta_audios = Path(os.getcwd()+'/audio')
 
 audioDrive=[]
 
-while len(list(ruta_audios.glob("*")))<NUMBER_OF_QUESTIONS:
+while True:  #Espera a que se suban todos los archivos de forma local
+    if len(list(ruta_audios.glob("*"))) >= NUMBER_OF_QUESTIONS:
+        break
     time.sleep(1)
 
-
-for index_pregunta, question in enumerate(quiz_data_dict["questions"]):
-    urlDrive = audio.upload_file_to_google_drive(os.getcwd()+'/audio'+str(index_pregunta)+'.mp3', '/audio'+str(index_pregunta)+'.mp3')
+for index_pregunta, question in enumerate(quiz_data_dict["questions"]):#Esto sube los audios desde local a drive
+    urlDrive = audio.upload_file_to_google_drive(os.getcwd()+'/audio'+'/'+str(index_pregunta)+'.mp3', '/audio'+'/'+str(index_pregunta)+'.mp3')
     audioDrive.append(urlDrive)
 
+
+while True:  #Espera a que se suban todos los archivos al Drive
+    if audio.obtener_cantidad_archivos_en_carpeta(urlDrive) >= NUMBER_OF_QUESTIONS:
+        break
+    time.sleep(1)    
 
 
 text_start_anim = Animation(
@@ -75,12 +88,6 @@ background_music = Audio("Music", 18, "0 s", None, True, "b5dc815e-dcc9-4c62-940
 source.elements.append(background_music)
 video = Video(source)
 
-#audio = [
-#    "https://drive.google.com/uc?export=download&id=1zS_b48WFMOosvi9FPjul-RKYwo-IEfC3",
-#    "https://drive.google.com/uc?export=download&id=1Vbg75JkipNkcGY0aeVMavJFfiITvmHyM",
-#    "https://drive.google.com/uc?export=download&id=1Vbg75JkipNkcGY0aeVMavJFfiITvmHyM",
-#    "https://drive.google.com/uc?export=download&id=1Vbg75JkipNkcGY0aeVMavJFfiITvmHyM"
-#]
 
 for index_pregunta, question in enumerate(quiz_data_dict["questions"]):
     composition = Composition("Question" + str(index_pregunta), 1, "8 s")
@@ -90,13 +97,13 @@ for index_pregunta, question in enumerate(quiz_data_dict["questions"]):
     question_text.animations.append(text_end_anim)
     composition.elements.append(question_text)
 
-    question_to_speech = Audio("Audio" + str(index_pregunta), 10, "0 s", "2 s", True, audio[index_pregunta], "100%", "0 s")
+    question_to_speech = Audio("Audio" + str(index_pregunta), 10, "0 s", "2 s", True, audioDrive[index_pregunta], "100%", "0 s")
     composition.elements.append(question_to_speech)
 
     animation = Animation(easing='linear', type='scale', scope='element', start_scale='120%', fade=False)
-    #image = Image(background_list_dict[index_pregunta], 1, 10, True, [])
-    #image.animations.append(animation)
-    #composition.elements.append(image)
+    image = Image(background_list_dict[index_pregunta], 1, 10, True, [])
+    image.animations.append(animation)
+    composition.elements.append(image)
 
     counter = Image("06311a89-c770-48e1-8a33-b5c1c417c787", 9, 5, True, [], y="81.96%", width="26.062%", height="15.1904%")
     composition.elements.append(counter)
@@ -126,8 +133,6 @@ for index_pregunta, question in enumerate(quiz_data_dict["questions"]):
 
     source.elements.append(composition)
 
-
-
 output = json.loads(video.toJSON())
 
 response = requests.post(
@@ -140,6 +145,7 @@ response = requests.post(
 )
 
 audio.eliminar_archivos_en_ruta(os.getcwd()+'/audio')
+
 for index_pregunta, question in enumerate(quiz_data_dict["questions"]):
     audio.eliminar_archivo_de_drive(audioDrive[index_pregunta])
 

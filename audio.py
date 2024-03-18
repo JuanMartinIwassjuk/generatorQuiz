@@ -9,6 +9,7 @@ from googleapiclient.http import MediaFileUpload
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
+from urllib.parse import urlparse, parse_qs
 
 import os
 
@@ -115,3 +116,21 @@ def eliminar_archivo_de_drive(file_url):
         print("Archivo eliminado de Google Drive.")
     except Exception as e:
         print(f"Error al intentar eliminar el archivo de Google Drive: {e}")
+
+
+def obtener_cantidad_archivos_en_carpeta(url_archivo):
+
+    servicio = authenticate()
+
+    # Parsear la URL del archivo para obtener su ID
+    id_archivo = parse_qs(urlparse(url_archivo).query)['id'][0]
+    
+    # Obtener información del archivo
+    archivo = servicio.files().get(fileId=id_archivo, fields='parents').execute()
+    id_carpeta = archivo.get('parents')[0]
+    
+    # Obtener la lista de archivos en la carpeta
+    resultados = servicio.files().list(q="'{}' in parents and trashed=false".format(id_carpeta),
+                                       fields='nextPageToken, files(id)').execute()
+    cantidad_archivos = len(resultados.get('files', []))
+    return cantidad_archivos
