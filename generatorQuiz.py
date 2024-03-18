@@ -1,5 +1,4 @@
 import openai
-import json
 from config import API_KEY, MODEL_NAME
 def get_openai_response_in_json_format(number_of_questions, number_of_options, difficulty_level, topic):
     
@@ -17,7 +16,7 @@ def get_openai_response_in_json_format(number_of_questions, number_of_options, d
     response = openai.ChatCompletion.create(
         model=model,
         messages=messages,
-        temperature=0.4 # Nivel de creatividad, el más alto es 1 que podría llegar a ser menos preciso
+        temperature=0.3 # Nivel de creatividad, el más alto es 1 que podría llegar a ser menos preciso
     )
 
     json_response = response["choices"][0]["message"]["content"]
