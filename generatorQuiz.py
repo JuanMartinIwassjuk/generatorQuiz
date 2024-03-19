@@ -1,28 +1,73 @@
 import openai
+import json
+import os
 from config import API_KEY, MODEL_NAME
+#(os.path.getsize(os.getcwd()+'/dataquizz.txt') == 0)
+
 def get_openai_response_in_json_format(number_of_questions, number_of_options, difficulty_level, topic):
+
+    if (os.path.getsize(os.getcwd()+'/response'+'/'+"lastParameters.txt") == 0 | (comparar_parametros_con_json(number_of_questions, number_of_options, difficulty_level, topic)==False)): # Si no hay archivos almacenados
     
-    openai.api_key = API_KEY
+        openai.api_key = API_KEY
 
-    model = MODEL_NAME
+        model = MODEL_NAME
 
-    prompt = f"generate {number_of_questions} specific questions with a difficulty level of {difficulty_level} about the topic {topic}"
+        prompt = f"generate {number_of_questions} specific questions with a difficulty level of {difficulty_level} about the topic {topic}"
 
-    messages = [
-        {'role': 'system', 'content': f'have {number_of_options} options for each question, including the correct answer,dont use single quote, and your response in JSON format like this:openkey "questions": [ openkey "question": "Sample question?", "options": ["Option A", "Option B", "Option C"], "correct_answer": "Option A" closedkey ] closedkey'},
-        {'role': 'user', 'content': prompt}
-    ]
+        messages = [
+            {'role': 'system', 'content': f'have {number_of_options} options for each question, including the correct answer,dont use single quote, and your response in JSON format like this:openkey "questions": [ openkey "question": "Sample question?", "options": ["Option A", "Option B", "Option C"], "correct_answer": "Option A" closedkey ] closedkey'},
+            {'role': 'user', 'content': prompt}
+        ]
 
-    response = openai.ChatCompletion.create(
-        model=model,
-        messages=messages,
-        temperature=0.3 # Nivel de creatividad, el más alto es 1 que podría llegar a ser menos preciso
-    )
+        response = openai.ChatCompletion.create(
+            model=model,
+            messages=messages,
+            temperature=0.3 # Nivel de creatividad, el más alto es 1 que podría llegar a ser menos preciso
+        )
+    
+        json_response = response["choices"][0]["message"]["content"]
 
-    json_response = response["choices"][0]["message"]["content"]
 
-
-
-    return json_response
+        guardar_datos_en_json(number_of_questions, number_of_options, difficulty_level, topic)
+        with open(os.getcwd()+'/response'+'/'+"data.txt", "w") as file:
+            file.write(json_response)
+        return json_response
+    else: return obtener_contenido_txt()
 
     
+def guardar_datos_en_json(number_of_questions, number_of_options, difficulty_level, topic):
+    # Crear un diccionario con los datos
+    data = {
+        "number_of_questions": number_of_questions,
+        "number_of_options": number_of_options,
+        "difficulty_level": difficulty_level,
+        "topic": topic
+    }
+    
+   
+    with open(os.getcwd()+'/response'+'/'+"lastParameters.txt", "w") as file:
+        # Escribir los datos en formato JSON
+        json.dump(data, "lastParameters.txt")
+
+def comparar_parametros_con_json(number_of_questions, number_of_options, difficulty_level, topic):
+
+    if (os.path.getsize(os.getcwd()+'/response'+'/'+"lastParameters.txt") == 0):#Esta vacio
+        # Cargar los datos del archivo JSON
+        with open(os.getcwd()+'/response'+'/'+"lastParameters.txt", "r") as file:
+            data = json.load(file)
+        
+        # Comparar los valores con los parámetros
+        if (data["number_of_questions"] == number_of_questions and
+            data["number_of_options"] == number_of_options and
+            data["difficulty_level"] == difficulty_level and
+            data["topic"] == topic):
+            return True
+        else:
+            return False
+    else: return False
+
+def obtener_contenido_txt():
+    ruta_archivo = os.path.join(os.getcwd(), 'response', 'data.txt')
+    with open(ruta_archivo, 'r') as archivo:
+        contenido = archivo.read()
+    return contenido
