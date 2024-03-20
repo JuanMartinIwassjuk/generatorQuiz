@@ -33,13 +33,14 @@ class Audio:
         self.audio_fade_out = audio_fade_out
 
 class Image:
-    def __init__(self, source, track, duration, clip, animations=[], y="", width="", height=""):
-        self.type = "image"
+    def __init__(self, source, track, duration, clip, animations=[], type="image", y="", width="", height="", time=0):
+        self.type = type
         self.source = source
         self.track = track
         self.duration = duration
         self.clip = clip
         self.animations = [Animation(**anim) for anim in animations] if animations else []
+        self.time = time
 
         if (y != ""):
             self.y = y
@@ -47,7 +48,7 @@ class Image:
             self.height = height
 
 class Element:
-    def __init__(self, type, track, animations=[], y="", x="", width="", height="", x_alignment="", y_alignment="", text="", font_family="", font_weight="", font_size_maximum="", fill_color="", stroke_color="", stroke_width="", background_color="", z_index="", time="", duration="", font_size=""):
+    def __init__(self, type, track, animations=[], y="", x="", width="", height="", x_alignment="", y_alignment="", text="", font_family="", font_weight="600", font_size_maximum="", fill_color="", stroke_color="", stroke_width="", background_color="", z_index="", time="", duration="", font_size=""):
         self.type = type
         self.track = track
         self.animations = [Animation(**anim) for anim in animations] if animations else []
@@ -59,7 +60,7 @@ class Element:
         self.y_alignment = "5%"
         self.text = text
         self.font_family = "Montserrat"
-        self.font_weight = "600"
+        self.font_weight = font_weight
         self.font_size_maximum = "6 vmin"
         self.fill_color = fill_color
         self.stroke_width = "1.5 vmin"

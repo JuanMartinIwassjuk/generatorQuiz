@@ -48,14 +48,15 @@ while True:  #Espera a que se suban todos los archivos al Drive
 
 
 text_start_anim = Animation(
-    time="0 s",
+    time="start s",
     duration="1.5 s",
     easing="quadratic-out",
     type="text-slide",
     scope="split-clip",
     split="line",
     distance="100%",
-    direction="up",
+    direction="right",
+    background_effect="disabled"
 )
 
 text_end_anim = Animation(
@@ -81,16 +82,16 @@ comp_start_anim = Animation(
     start_angle="270°"
 )
 
-stroke_color = [{ "time": "0 s", "value": "#000000" }, { "time": "5.2 s", "value": "#000000" }, { "time": "5.5 s", "value": "#00ff00" }]
+stroke_color = [{ "time": "0 s", "value": "#000000" }, { "time": "7.2 s", "value": "#000000" }, { "time": "7.5 s", "value": "#00ff00" }]
 
 source = Source('mp4', 1080, 1920, functions_videos.generar_tiempo_video(NUMBER_OF_QUESTIONS))
-background_music = Audio("Music", 18, "0 s", None, True, "b5dc815e-dcc9-4c62-9405-f94913936bf5", "51%", "2 s")
+background_music = Audio("Music", 18, "0 s", None, True, "b5dc815e-dcc9-4c62-9405-f94913936bf5", "5%", "2 s")
 source.elements.append(background_music)
 video = Video(source)
 
 
 for index_pregunta, question in enumerate(quiz_data_dict["questions"]):
-    composition = Composition("Question" + str(index_pregunta), 1, "8 s")
+    composition = Composition("Question" + str(index_pregunta), 1, "10 s")
 
     question_text = Element("text", track=2, text=question["question"], y="21.80%", fill_color="#000000", background_color="#ffffff")
     question_text.animations.append(text_start_anim)
@@ -101,16 +102,19 @@ for index_pregunta, question in enumerate(quiz_data_dict["questions"]):
     composition.elements.append(question_to_speech)
 
     animation = Animation(easing='linear', type='scale', scope='element', start_scale='120%', fade=False)
-    image = Image(background_list_dict[index_pregunta], 1, 10, True, [])
-    image.animations.append(animation)
-    composition.elements.append(image)
+    background_video = Image(type="video", source="05940918-3ab9-444e-b32f-1e39141f7282", track=1, time=0, duration=10, clip=True)
+    background_video.animations.append(animation)
+    # image = Image(background_list_dict[index_pregunta], 1, 10, True, [])
+    # image.animations.append(animation)
+    # composition.elements.append(image)
+    composition.elements.append(video)
 
-    counter = Image("06311a89-c770-48e1-8a33-b5c1c417c787", 9, 5, True, [], y="81.96%", width="26.062%", height="15.1904%")
+    counter = Image("06311a89-c770-48e1-8a33-b5c1c417c787", 9, 5, True, [], y="7%", width="20%", height="12%", time=1.2)
     composition.elements.append(counter)
 
-    countdown = Audio("countdown", 10, "0 s", "4.8 s", True, "3b591fe7-e995-4e18-9353-f38c122cc3fb", "100%", "0 s")
+    countdown = Audio("countdown", 10, "1.2 s", "4.8 s", True, "3b591fe7-e995-4e18-9353-f38c122cc3fb", "5%", "0 s")
     composition.elements.append(countdown)
-    correct = Audio("correct", 10, "4.90 s", "1.85 s", True, "530d3905-bd5b-4534-9532-f6657ed03296", "100%", "0 s")
+    correct = Audio("correct", 10, "7.2 s", "1.85 s", True, "530d3905-bd5b-4534-9532-f6657ed03296", "50%", "0 s")
     composition.elements.append(countdown)
     composition.elements.append(correct)
 
@@ -120,6 +124,9 @@ for index_pregunta, question in enumerate(quiz_data_dict["questions"]):
     for index_opcion, option in enumerate(question["options"]):
         position_y = 52 + (10 * index_opcion)
         option_text = Element("text", track=index_opcion + 3, text=option, y=str(position_y) + "%", fill_color="#ffffff")
+        option_text.animations.append(text_start_anim)
+        option_text.animations.append(text_end_anim)
+
         if index_opcion == functions_videos.encontrar_indice(quiz_data_dict["questions"][index_pregunta]["options"],quiz_data_dict["questions"][index_pregunta]["correct_answer"]):
             option_text.stroke_color = stroke_color
         else:
@@ -128,7 +135,7 @@ for index_pregunta, question in enumerate(quiz_data_dict["questions"]):
         composition.elements.append(option_text)
 
     for i in range(5):
-        countdown_text_number = Element("text", track=12, text=str(5 - i), x="54.90%", y="84.96%", z_index=1, time=i, duration="1 s", fill_color="#111111", font_size="15 vmin")
+        countdown_text_number = Element("text", track=12, text=str(5 - i), x="54.90%", y="9.5%", z_index=1, time=i + 1.2, duration="1 s", fill_color="#111111", font_size="12 vmin", font_weight="400")
         composition.elements.append(countdown_text_number)
 
     source.elements.append(composition)
