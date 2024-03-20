@@ -6,7 +6,7 @@ from config import API_KEY, MODEL_NAME
 
 def get_openai_response_in_json_format(number_of_questions, number_of_options, difficulty_level, topic):
 
-    if (os.path.getsize(os.getcwd()+'/response'+'/'+"lastParameters.txt") == 0 | (comparar_parametros_con_json(number_of_questions, number_of_options, difficulty_level, topic)==False)): # Si no hay archivos almacenados
+    if ((comparar_parametros_con_json(number_of_questions, number_of_options, difficulty_level, topic)==False)): # Si Son iguales los parámetros actuales con la consulta anterior
     
         openai.api_key = API_KEY
 
@@ -51,7 +51,7 @@ def guardar_datos_en_json(number_of_questions, number_of_options, difficulty_lev
 
 def comparar_parametros_con_json(number_of_questions, number_of_options, difficulty_level, topic):
 
-    if (os.path.getsize(os.getcwd()+'/response'+'/'+"lastParameters.txt") == 0):#Esta vacio
+    if (os.path.getsize(os.getcwd()+'/response'+'/'+"lastParameters.txt") != 0):#No Esta vacio
         # Cargar los datos del archivo JSON
         with open(os.getcwd()+'/response'+'/'+"lastParameters.txt", "r") as file:
             data = json.load(file)

@@ -6,7 +6,7 @@ def generarArchivoDeljson(json):
 
 
 def generar_tiempo_video(cant_preguntas):
-    resultado = str(cant_preguntas * 8) + ' s'
+    resultado = str(cant_preguntas * 10) + ' s'
     return resultado
 
 def encontrar_indice(lista, cadena):
